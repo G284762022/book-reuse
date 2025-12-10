@@ -1,0 +1,203 @@
+/* 複数箇所で色を統一する */
+:root{
+  --primary:#0c6befd6;
+  --muted:#6b7280;
+  --card-bg:#ffffff;
+  --bg:#f5f7fa;
+  --accent:#eef6ff;
+}
+/* 余白の計算の設定 */
+*{box-sizing:border-box}
+
+/* ページ全体の高さを100%にする */
+html,body{height:100%}
+
+/* フォントと背景色の設定 */
+body{
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Noto Sans JP", "游ゴシック体", Roboto, "Hiragino Kaku Gothic ProN", sans-serif;
+  background:var(--bg);
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+}
+
+.header{
+  background:var(--primary);
+  color:white;
+  padding:1.2rem;
+  text-align:center;
+}
+.header h1{margin:0;font-size:1.2rem}
+.subtitle{margin:0.4rem 0 0;font-size:0.9rem;opacity:0.95}
+
+
+.container{
+  max-width:920px;
+  margin:1.2rem auto;
+  padding:0 1rem;
+}
+
+/* card */
+.card{
+  background:var(--card-bg);
+  border-radius:12px;
+  padding:1rem;
+  box-shadow:0 6px 18px rgba(17,24,39,0.06);
+  margin-bottom:1rem;
+}
+
+/* scanner layout */
+.scanner-row{
+  display:flex;
+  gap:1rem;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+.reader{
+  width:320px;
+  height:240px;
+  border-radius:8px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#f8fbff,#eef6ff);
+  border:2px solid rgba(43,123,228,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
+.controls{flex:1;min-width:240px}
+.scan-result{margin:0 0.5rem 0.6rem 0;color:var(--muted)}
+
+.manual input{
+  width:100%;
+  padding:0.6rem;
+  margin:0.4rem 0;
+  border-radius:8px;
+  border:1px solid #e2e8f0;
+}
+.manual button{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:0.6rem 0.8rem;
+  border-radius:8px;
+  cursor:pointer;
+  margin-right:0.4rem;
+}
+.manual .or{font-size:0.85rem;color:var(--muted);margin:0.6rem 0}
+
+/* list */
+.list-section h2{margin-bottom:0.6rem}
+.book-list{
+  display:flex;
+  flex-direction:column;
+  gap:0.9rem;
+}
+.book-card{
+  display:flex;
+  gap:0.9rem;
+  align-items:flex-start;
+  padding:0.8rem;
+  border-radius:10px;
+  border:1px solid #eef2f7;
+  background:var(--accent);
+}
+.thumb{
+  width:84px;
+  height:112px;
+  background:#fff;
+  border-radius:6px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #e6eefb;
+}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.card-body{flex:1}
+.card-body h3{margin:0;font-size:1.03rem;color:#0f172a}
+.meta{font-size:0.85rem;color:var(--muted);margin-top:0.25rem}
+.desc{margin-top:0.5rem;font-size:0.9rem;color:#334155}
+
+/* actions */
+.actions{
+  display:flex;
+  gap:0.4rem;
+  margin-top:0.6rem;
+  flex-wrap:wrap;
+}
+.action-btn{
+  background:white;
+  border:1px solid #dbeafe;
+  color:var(--primary);
+  padding:0.45rem 0.6rem;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:0.85rem;
+}
+.action-btn.primary{
+  background:var(--primary);
+  color:white;
+  border:none;
+}
+
+/* empty */
+.empty{padding:1rem;text-align:center;color:var(--muted)}
+
+/* modal */
+.modal{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(2,6,23,0.45);
+  padding:1rem;
+
+  /* ★追加：中身が画面より大きいときに全体でスクロールできるように */
+  overflow-y:auto;
+}
+
+.modal-content{
+  background:white;
+  border-radius:12px;
+  padding:1rem;
+
+  /* ★ここを少し広く＆高く＋スクロール可能に */
+  max-width:900px;    /* 元は 720px */
+  width:100%;
+  max-height:90vh;    /* 画面高さの90%までに制限 */
+  overflow-y:auto;    /* 中身だけスクロール */
+
+  position:relative;
+  box-shadow:0 12px 36px rgba(2,6,23,0.35);
+}
+
+
+.modal-close{position:absolute;right:0.6rem;top:0.4rem;border:none;background:transparent;font-size:1.1rem;cursor:pointer}
+.hidden{display:none}
+
+/* responsive */
+@media (max-width:720px){
+  .reader{width:100%;height:220px}
+  .scanner-row{flex-direction:column}
+  .thumb{width:72px;height:96px}
+}
+
+
+/* Google Maps埋め込みフレーム */
+.map-frame {
+  width: 100%;
+  height: 280px;
+  border: 0;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+/* 外部リンク表示用 */
+.link-list a {
+  display: block;
+  margin-top: 8px;
+  color: var(--primary);
+  word-break: break-all;
+}
