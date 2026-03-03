@@ -1,10 +1,9 @@
-// script.js
-// 必要: html5-qrcode を index.html に読み込んでおくこと
-// 注意: カメラは HTTPS または localhost で動作します
+// html5-qrcode を index.html に読み込んでおく
 
 let html5QrCode = null;
 let scanning = false;
 const bookList = []; // {isbn, title, authors, publishedDate, description, thumbnail}
+const GOOGLE_BOOKS_API_KEY = "AIzaSyAgP-R0vo_ac7_0KYuoOViHoLKeo1tD3DE";
 
 // htmlから要素を取得して使えるようにする
 const scanResultEl = document.getElementById("scanResult");
@@ -15,14 +14,11 @@ const manualAddBtn = document.getElementById("manualAddBtn");
 const manualTitle = document.getElementById("manualTitle");
 const manualTitleBtn = document.getElementById("manualTitleBtn");
 
-// modal
 // モーダルの部分も同様に要素を使えるようにする
 const detailModal = document.getElementById("detailModal");
 const modalBody = document.getElementById("modalBody");
 const closeModalBtn = document.getElementById("closeModal");
 
-
-// helper: sanitize ISBN (数字のみ)
 // 空白やハイフン、改行などを数字だけに整える
 function normalizeIsbn(input) {
   if (!input) return "";
@@ -36,7 +32,13 @@ async function fetchBookInfo(isbn) {
     showMessage("無効なISBNです。");
     return null;
   }
-  const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(qIsbn)}`;
+
+    const baseUrl = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(qIsbn)}`;
+    const url = GOOGLE_BOOKS_API_KEY
+        ? `${baseUrl}&key=${encodeURIComponent(GOOGLE_BOOKS_API_KEY)}`
+        : baseUrl;
+
+
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error("APIエラー");
@@ -69,7 +71,7 @@ function showMessage(msg) {
 }
 
 // 一覧を再描画
-// 登録された本一覧をカード形式で HTML に描画する。
+// 登録された本一覧をカード形式で HTML に描画する
 function renderBookList() {
   bookListEl.innerHTML = "";
   if (bookList.length === 0) {
@@ -138,7 +140,7 @@ function handleAction(action, idx) {
       <hr style="margin:12px 0;">
 
       <!-- 1. 荒川区立図書館 ティーンズイベント「本の交換会」 -->
-      <h4>① ★ティーンズイベント★「本の交換会」＠ゆいの森あらかわ（荒川区）</h4>
+      <h4>1 ★ティーンズイベント★「本の交換会」＠ゆいの森あらかわ（荒川区）</h4>
       <p>
         場所：ゆいの森あらかわ（東京都荒川区）<br>
         開催：ティーンズスタッフ主催の不定期イベント（過去には夏休み期間などに開催）
@@ -160,7 +162,7 @@ function handleAction(action, idx) {
       <hr style="margin:16px 0;">
 
       <!-- 2. 東京読書交換会（池袋・ふじみ野） -->
-      <h4>② 東京読書交換会（池袋・ふじみ野）</h4>
+      <h4> 東京読書交換会（池袋・ふじみ野）</h4>
       <p>
         場所：東京都豊島区・埼玉県ふじみ野市など（としま産業振興プラザ ほか）<br>
         開催例：平日夜（19時過ぎ〜）や週末午後に定期開催
@@ -182,7 +184,7 @@ function handleAction(action, idx) {
       <hr style="margin:16px 0;">
 
       <!-- 3. POPEYE Web「ブックスワップ・ミーティング」 -->
-      <h4>③ 「ブックスワップ・ミーティング」｜POPEYE Web</h4>
+      <h4> 「ブックスワップ・ミーティング」｜POPEYE Web</h4>
       <p>
         場所：都内のカフェやイベントスペースなど（例：渋谷エリアの会場など）<br>
         開催：不定期開催（詳細は公式記事・最新情報を確認）
@@ -204,7 +206,7 @@ function handleAction(action, idx) {
       <hr style="margin:16px 0;">
 
       <!-- 4. 本の交換会（中野 東部区民活動センター） -->
-      <h4>④ 本の交換会＠東部区民活動センター（中野区）</h4>
+      <h4> 本の交換会＠東部区民活動センター（中野区）</h4>
       <p>
         場所：東部区民活動センター（東京都中野区中央2丁目18-21）<br>
         開催日：2026年1月11日（日）第10回目予定<br>
@@ -236,7 +238,7 @@ function handleAction(action, idx) {
 
 
   if (action === "donate") {
-    // 寄付：近くの図書館マップ + ネット寄付サイトのリンクを表示
+    // 寄付：近くの図書館マップ，ネット寄付サイトのリンクを表示
 
     const defaultQuery = "図書館";
     const defaultMapSrc = `https://www.google.com/maps?q=${encodeURIComponent(defaultQuery)}&output=embed`;
@@ -247,8 +249,8 @@ function handleAction(action, idx) {
         ${escapeHtml(b.authors)} ・ ${escapeHtml(b.publishedDate)}
       </div>
 
-      <!-- ① 近くの図書館を地図で探す -->
-      <p>① 自分の地域の図書館を地図で探す</p>
+      <!--  近くの図書館を地図で探す -->
+      <p> 自分の地域の図書館を地図で探す</p>
       <p style="font-size:0.9rem;color:#64748b;margin-top:4px">
         「現在地から探す」を押すと、今いる場所の近くの図書館を表示します。<br>
         位置情報を許可したくない場合は、市区町村名などを入力して「エリア名で検索」を使ってください。
@@ -275,8 +277,8 @@ function handleAction(action, idx) {
 
       <hr style="margin:16px 0;">
 
-      <!-- ② ネットでいらない本を寄付できるサイト -->
-      <p>② ネットでいらない本を寄付できるサイト</p>
+      <!--  ネットでいらない本を寄付できるサイト -->
+      <p> ネットでいらない本を寄付できるサイト</p>
       <p style="font-size:0.9rem;color:#64748b;margin-top:4px">
         詳細条件（受け付けている本の状態・ジャンルなど）は各サイトのページで必ず確認してください。
       </p>
@@ -349,7 +351,7 @@ function handleAction(action, idx) {
 
     const isbnQuery = b.isbn || "";
 
-    // デフォルト地図（全国のリサイクルショップ検索）
+    // デフォルト地図（リサイクルショップ）
     const defaultMapSrc = `https://www.google.com/maps?q=${encodeURIComponent("リサイクルショップ")}&output=embed`;
     const mercari = `https://www.mercari.com/jp/search/?keyword=${encodeURIComponent(isbnQuery)}`;
     const yahoo = `https://auctions.yahoo.co.jp/search/search?p=${encodeURIComponent(isbnQuery)}`;
@@ -360,8 +362,8 @@ function handleAction(action, idx) {
         ${escapeHtml(b.authors)} ・ ${escapeHtml(b.publishedDate)}
       </div>
 
-      <!-- ① 近くのリサイクルショップを地図で探す -->
-      <p>① 近くのリサイクルショップを地図で探す</p>
+      <!--  近くのリサイクルショップを地図で探す -->
+      <p> 近くのリサイクルショップを地図で探す</p>
       <p style="font-size:0.9rem;color:#64748b;margin-top:4px">
         「現在地から探す」を押すと、今いる場所の近くのリサイクルショップを表示します。<br>
         位置情報を許可したくない場合は、市区町村名などを入力して「エリア名で検索」を使ってください。
@@ -388,8 +390,8 @@ function handleAction(action, idx) {
 
       <hr style="margin:16px 0;">
 
-      <!-- ② フリマ・オークションサイトでISBN検索 -->
-      <p>② フリマ・オークションサイトでこの本の相場をチェック</p>
+      <!--  フリマ・オークションサイトでISBN検索 -->
+      <p> フリマ・オークションサイトでこの本の相場をチェック</p>
       <p style="font-size:0.9rem;color:#64748b;margin-top:4px">
         下のリンクから、この本（ISBN）に近い出品や相場を確認できます。
       </p>
@@ -408,7 +410,7 @@ function handleAction(action, idx) {
     `;
     detailModal.classList.remove("hidden");
 
-    // ▼▼ リサイクルショップ地図のボタン処理 ▼▼
+    //リサイクルショップ地図のボタン処理
     const recycleNearBtn = modalBody.querySelector("#recycleNearBtn");
     const recycleInput = modalBody.querySelector("#recycleInput");
     const recycleSearchBtn = modalBody.querySelector("#recycleSearchBtn");
@@ -459,7 +461,7 @@ function handleAction(action, idx) {
   }
 }
 
-// モーダル表示（簡易）
+// モーダル
 function showDetails(obj) {
   modalBody.innerHTML = `
     <h3 style="margin-top:0">${escapeHtml(obj.title || "")}</h3>
@@ -471,7 +473,6 @@ function showDetails(obj) {
 }
 closeModalBtn?.addEventListener?.("click", () => detailModal.classList.add("hidden"));
 
-// utility
 function truncate(str, n){ return str.length>n? str.slice(0,n-1)+"…":str }
 function escapeHtml(unsafe){
   if (!unsafe) return "";
@@ -490,7 +491,7 @@ async function startScanner() {
       { facingMode: "environment" },
       config,
       async (decodedText, decodedResult) => {
-        // html5-qrcodeはQRやバーコードの文字列を返す。ISBNは数字列なのでフィルタする
+        // html5-qrcodeはQRやバーコードの文字列を返す
         const isbn = normalizeIsbn(decodedText);
         if (!isbn) {
           showMessage("ISBNでないコードを検出しました。再スキャンします。");
@@ -511,7 +512,6 @@ async function startScanner() {
         }, 800);
       },
       (errorMessage) => {
-        // 読み取り中のログ（無視可）
         // console.debug("scanning...", errorMessage);
       }
     );
@@ -553,7 +553,7 @@ manualAddBtn.addEventListener("click", async () => {
   showMessage(`${info.title} を一覧に追加しました。`);
 });
 
-// タイトル手動追加（最小限の情報で登録）
+// タイトル手動追加（最小限の情報で）
 manualTitleBtn.addEventListener("click", () => {
   const title = manualTitle.value.trim();
   if (!title) { alert("タイトルを入力してください。"); return; }
@@ -577,7 +577,7 @@ window.addEventListener("load", () => {
   startScanner();
 });
 
-// モーダルをクリックで閉じる（背景クリック）
+// モーダルをクリックで閉じる
 detailModal.addEventListener("click", (e) => {
   if (e.target === detailModal) detailModal.classList.add("hidden");
 });
