@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <!-- 文字コード設定(日本語) -->
+  <meta charset="utf-8" /> 
+  <!-- スマホでの拡大縮小を制御（レスポンシブ対応） -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>書籍の処分方法を迷う人に向けた意思決定支援システム</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- html5-qrcode（CDN） -->
+  <!-- 外部ライブラリの読み込み（deferでHTMLが全部読み終わった後に実行） -->
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+
+  <!-- メインJS -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <!-- タイトルとサブタイトル部分 -->
+  <header class="header">
+    <h1>書籍の処分方法を迷う人に向けた意思決定支援システム</h1>
+    <p class="subtitle">カメラでバーコード（ISBN）を読み取り、リユース方法を提示</p>
+  </header>
+
+  <!-- 読み取りのメイン部分、コンテナ（容器） -->
+  <main class="container">
+    <!-- スキャナー & 手動入力 -->
+    <section class="card scanner">
+      <h2>ISBNを読み取る / 入力</h2>
+
+      <div class="scanner-row">
+        <!-- カメラ映像が入る領域（HTML5 QR Code がここを使う） -->
+        <div id="reader" class="reader"></div>
+        
+        <!-- スキャン状態のメッセージ -->
+        <div class="controls">
+          <p id="scanResult" class="scan-result">スキャン待ち…</p>
+
+          <!-- 手動入力(ISBN) -->
+          <div class="manual">
+            <input id="manualIsbn" placeholder="ISBNを入力" />
+            <button id="manualAddBtn">ISBN入力で追加</button>
+
+          <!-- 手動入力(タイトル) -->
+            <div class="or">または</div>
+            <input id="manualTitle" placeholder="タイトルを入力" />
+            <button id="manualTitleBtn">タイトルで追加</button>
+          </div>
+
+          <p class="note">※ カメラでスキャンは許可することで動作します</p>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 利用者条件（意思決定支援のための入力） -->
+    <section class="card profile">
+      <h2>あなたの条件（おすすめ判定に使います）</h2>
+      <p class="small-note">
+        ※ ここで入力した条件をもとに、各書籍に対して「捨てる / 売る / 寄附 / 交換 / その他」のおすすめを理由つきで提示します。
+        入力はこのブラウザ内（localStorage）に保存されます。
+      </p>
+
+      <div class="profile-grid">
+        <div class="field">
+          <label>いちばん重視したいこと</label>
+          <div class="segmented" role="group" aria-label="priority">
+            <label><input type="radio" name="priority" value="money"> お金</label>
+            <label><input type="radio" name="priority" value="effort"> 手間の少なさ</label>
+            <label><input type="radio" name="priority" value="speed"> 早さ</label>
+            <label><input type="radio" name="priority" value="social"> 誰かの役に立つ</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="bookCondition">本の状態（目安）</label>
+          <select id="bookCondition">
+            <option value="good">きれい（ほぼ新品）</option>
+            <option value="ok" selected>ふつう（多少の使用感）</option>
+            <option value="bad">悪い（書き込み・破れ・強い日焼け）</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>発送（梱包・コンビニ発送など）ができる</label>
+          <div class="segmented">
+            <label><input type="radio" name="canShip" value="yes" checked> できる</label>
+            <label><input type="radio" name="canShip" value="no"> できない</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>店舗へ持ち込みできる</label>
+          <div class="segmented">
+            <label><input type="radio" name="canVisit" value="yes" checked> できる</label>
+            <label><input type="radio" name="canVisit" value="no"> できない</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>個人取引（やりとり）への抵抗</label>
+          <input id="p2pResistance" type="range" min="0" max="2" step="1" value="1">
+          <div class="range-hint"><span>低い</span><span>ふつう</span><span>高い</span></div>
+        </div>
+
+        <div class="field">
+          <label>捨てるのはできれば避けたい</label>
+          <div class="segmented">
+            <label><input type="radio" name="avoidDiscard" value="yes" checked> はい</label>
+            <label><input type="radio" name="avoidDiscard" value="no"> いいえ</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button id="saveProfileBtn" class="primary-btn">条件を保存</button>
+        <span id="profileSavedMsg" class="muted"></span>
+      </div>
+    </section>
+
+
+    <!-- 一覧 -->
+    <section class="card list-section">
+      <h2>登録済みの書籍一覧</h2>
+      <div id="bookList" class="book-list">
+        <!-- JSでカードを追加 -->
+      </div>
+
+      <!-- リストが空の時に表示するメッセージ -->
+      <div id="emptyMsg" class="empty">まだ登録がありません。ISBNをスキャンするか入力して追加してください。</div>
+
+    </section>
+  </main>
+
+  <!-- モーダル（小さいウィンドウの表示用） -->
+  <div id="detailModal" class="modal hidden">
+    <!-- モーダル全体 -->
+    <div class="modal-content">
+      <!-- モーダル右上の✕ボタン -->
+      <button id="closeModal" class="modal-close">✕</button>
+      <!-- モーダルの表示部分 -->
+      <div id="modalBody"></div>
+    </div>
+  </div>
+</body>
+</html>
